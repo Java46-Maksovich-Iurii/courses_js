@@ -1,0 +1,12 @@
+{
+    "courses": ["Java", "Java Technologies", "QA", "React", "JavaScript", "HTML/CSS"],
+    "lectors": ["Abraham", "Yakob", "Sarah", "Yosef", "Itshak", "Vasya", "Moshe"],
+    "minCost": 5000,
+    "maxCost": 30000,
+    "minHours": 80,
+    "maxHours": 500,
+    "minYear": 2000,
+    "maxYear": 2022,
+    "minID": 100000,
+    "maxID": 999999
+}
