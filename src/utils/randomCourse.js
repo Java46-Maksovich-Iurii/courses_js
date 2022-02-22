@@ -11,6 +11,3 @@ export function getRandomCourse(courseData) {
     return createCourse(randomID, randomName, randomLecturer, randomHours, randomCost, randomDate);
 }
 
-
-// id, name, lecturer, hours, cost, openingDate
-
