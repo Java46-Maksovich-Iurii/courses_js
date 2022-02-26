@@ -9,8 +9,9 @@ export function getRandomElement (array) {
 
 export function getRandomDate(minYear, maxYear) {
     const randomMonth = getRandomNumber(0, 11);
-    const randomDay = getRandomNumber(1, 28);
+    const randomDay = getRandomNumber(1, 31);
     const randomYear = getRandomNumber(minYear, maxYear);
-    return new Date(randomYear, randomMonth, randomDay).toLocaleDateString();
+    const date = new Date(randomYear, randomMonth, randomDay);
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
