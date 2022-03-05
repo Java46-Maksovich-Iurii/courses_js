@@ -2,15 +2,16 @@
 
 import { getRandomNumber } from "../utils/random";
 
-// data are regular JS array
+//data are the regular JS array
 export default class Courses {
     #courses
     #minId
     #maxId
-    constructor(courses, minId, maxId) {
-        this.#courses = courses ?? [];
+    constructor(minId, maxId, courses) {
+        this.#courses =  courses ?? [];
         this.#minId = minId ?? 1;
-        this.#maxId = maxId ?? 100000;
+        this.#maxId = maxId ?? 10000000;
+
     }
     add(course) {
         course.id = this.#getId();
@@ -18,13 +19,17 @@ export default class Courses {
         return course;
     }
     #getId() {
+        //return unique value of id
         let id;
         do {
-            id = getRandomNumber(this.#minId, this.#maxId);
-        } while (this.exists(id));
-      return id; 
+            id = getRandomNumber(this.#minId, this.#maxId)
+        }while(this.exists(id));
+        return id;
     }
     exists(id) {
-      return !!(this.#courses.find(course => {course.id === id}));
+        return !!this.#courses.find(c => c.id === id);
+    }
+    get() {
+        return this.#courses;
     }
 }

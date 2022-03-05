@@ -1,3 +1,5 @@
+import _, { min } from "lodash";
+
 // Data processor
 export default class College {
     #courseData
@@ -7,25 +9,45 @@ export default class College {
         this.#courseData = courseData;
     }
     addCourse(course) {
-        const errorMessage = this.getValidationMessage(course);
-        if (errorMessage) return errorMessage; 
-        
         course.hours = +course.hours;
         course.cost = +course.cost;
-        this.#courses.add(course);
-        return course;
+        course.openingDate = new Date(course.openingDate);
+        const validationMessage = this.#getValidationMessage(course);
+        if(!validationMessage) {
+           return this.#courses.add(course);
+        } 
+        return validationMessage;
     }
-
-    getValidationMessage(course) {
-        let {cost , hours, lecturer, name, openingDate} = course;
-        const validation = [];
-        const openingYear = new Date(openingDate).getFullYear();
-        if (!this.#courseData.courses.includes(course.name)) validation.push(`name should be in ${this.#courseData.courses.join(', ')}`);
-        if (!this.#courseData.lectors.includes(course.lecturer)) validation.push(`lecturer should be in ${this.#courseData.lectors.join(', ')}`);
-        if (!hours || hours < this.#courseData.minHours || hours > this.#courseData.maxHours) validation.push(`hours should be in range [${[this.#courseData.minHours, this.#courseData.maxHours].join(' - ')}]`);
-        if (!cost || cost < this.#courseData.minCost || cost > this.#courseData.maxCost) validation.push(`cost should be in range [${[this.#courseData.minCost, this.#courseData.maxCost].join(' - ')}]`);
-        if (openingYear < this.#courseData.minYear || openingYear > this.#courseData.maxYear) validation.push(`year should be in range [${[this.#courseData.minYear, this.#courseData.maxYear].join(' - ')}]`);
-        if (validation.length == 0) return '';
-        return validation.join(', \n');
+    #getValidationMessage(course) {
+        const {minCost, maxCost, minHours, maxHours, minYear, maxYear, lectors, courses} = this.#courseData;
+        const {cost, hours, openingDate, lecturer, name} = course
+        
+        let message = '';
+        message += cost > maxCost || cost < minCost ?
+         `wrong cost value - should be in range [${minCost}-${maxCost}] <br>`: '';
+         message += hours > maxHours || hours < minHours ?
+         `wrong hours value - should be in range [${minHours}-${maxHours}] <br>`: '';
+         message += !lectors.includes(lecturer) ? `wrong lecturer name - should be one from ${lectors} <br>`: '';
+         message += !courses.includes(name) ? `wrong course name - should be one from ${courses}`:'';
+         const year = openingDate.getFullYear();
+         message += year < minYear || year > maxYear ?
+          `wrong opening date - year should be in range [${minYear} - ${maxYear}]` : ''
+         return message;
+    }
+    getAllCourses() {
+        return this.#courses.get()
+    }
+    sortCourses(key) {
+        return _.sortBy(this.getAllCourses(), key);
+    }
+    getStatistics(lengthInterval, key) {
+        const courses = this.getAllCourses();
+        const stat = _.countBy(courses, (course) => Math.floor(course[key] / lengthInterval));
+        return Object.entries(stat).map( el => (
+            {
+            minInterval : el[0]*lengthInterval, 
+            maxInterval : (el[0]*lengthInterval)+(lengthInterval-1),
+            amount : el[1] 
+            }));
     }
 }
