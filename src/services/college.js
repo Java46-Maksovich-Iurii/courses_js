@@ -1,4 +1,4 @@
-import _, { min } from "lodash";
+import _ from "lodash";
 
 // Data processor
 export default class College {
@@ -8,16 +8,18 @@ export default class College {
         this.#courses = courses;
         this.#courseData = courseData;
     }
-    addCourse(course) {
+
+    async addCourse(course) {
         course.hours = +course.hours;
         course.cost = +course.cost;
         course.openingDate = new Date(course.openingDate);
         const validationMessage = this.#getValidationMessage(course);
         if(!validationMessage) {
-           return this.#courses.add(course);
+           return await this.#courses.add(course);
         } 
         return validationMessage;
     }
+
     #getValidationMessage(course) {
         const {minCost, maxCost, minHours, maxHours, minYear, maxYear, lectors, courses} = this.#courseData;
         const {cost, hours, openingDate, lecturer, name} = course
@@ -34,20 +36,34 @@ export default class College {
           `wrong opening date - year should be in range [${minYear} - ${maxYear}]` : ''
          return message;
     }
-    getAllCourses() {
-        return this.#courses.get()
+    async getAllCourses() {
+        return await this.#courses.get();
     }
     sortCourses(key) {
         return _.sortBy(this.getAllCourses(), key);
     }
-    getStatistics(lengthInterval, key) {
+    #getStatistics(interval, field) {
         const courses = this.getAllCourses();
-        const stat = _.countBy(courses, (course) => Math.floor(course[key] / lengthInterval));
-        return Object.entries(stat).map( el => (
-            {
-            minInterval : el[0]*lengthInterval, 
-            maxInterval : (el[0]*lengthInterval)+(lengthInterval-1),
-            amount : el[1] 
-            }));
+        const objStat =  _.countBy(courses, e => {   
+            return Math.floor(e[field]/interval);
+         });
+         return Object.keys(objStat).map(s => {
+             return {minInterval: s * interval,
+                 maxInterval: s * interval + interval -1,
+                amount: objStat[s]}
+         })
     }
+    getHoursStatistics(lengthInterval){
+        return this.#getStatistics(lengthInterval, 'hours');
+    }
+    getCostStatistics(lengthInterval) {
+        return this.#getStatistics(lengthInterval, 'cost');
+    }
+    removeCourse(id) {
+        if (!this.#courses.exists(id)) {
+            throw `course with id ${id} not found`
+        }
+        return this.#courses.remove(id);
+    }
+      
 }
