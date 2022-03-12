@@ -3,6 +3,7 @@ export default class TableHandler {
     #columnsDefinition
     #sortFnName
     #removeFnName
+    
     constructor(columnsDefinition, idTable, sortFnName, removeFnName) {
         //example of columnsDefinition:
         // const columns = [{'key': 'name', 'displayName':'Course Name'},
@@ -14,8 +15,6 @@ export default class TableHandler {
         if (!this.#tableElem) {
             throw "Table element is not defined"
         }
-
-
     }
     showTable(objects) {
         this.#tableElem.innerHTML = `${this.#getHeader()}${this.#getBody(objects)}`;
@@ -27,8 +26,7 @@ export default class TableHandler {
         return `<thead><tr>${this.#getColumns()}</tr></thead>`
     }
     #getColumns() {
-        const columns = this.#columnsDefinition
-        .map(c => `<th onclick="${this.#getSortFn(c)}">${c.displayName}</th>`);
+        const columns = this.#columnsDefinition.map(c => `<th onclick="${this.#getSortFn(c)}">${c.displayName}</th>`);
         if (this.#removeFnName) {
             columns.push("<th></th>");
         }
