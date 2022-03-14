@@ -4,9 +4,9 @@ export default class Spinner {
         this.#spinnerElement = document.getElementById(idSpinnerParent);
     }
 
-async awaitWithSpinner(fn) {
+async awaitWithSpinner(promsise) {
     this.#startSpinner();
-    const response = await fn; 
+    const response = await promsise; 
     this.#stopSpinner();
     return response;
 }
@@ -17,7 +17,7 @@ async awaitWithSpinner(fn) {
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>`
-}                                                                                                    // reminder question to Daniel
+}                                                                                                 
 
 #stopSpinner () {
     this.#spinnerElement.innerHTML = ""

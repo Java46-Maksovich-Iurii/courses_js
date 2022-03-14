@@ -26,6 +26,7 @@ const tableHandler = new TableHandler([
 const formHandler = new FormHandler("courses-form", "alert");
 const generationHandler = new FormHandler("generation-form", "alert");
 const navigator = new NavigatorButtons(["0","1","2", "3", "4"]);
+const spinner = new Spinner("spinner");
 
 formHandler.addHandler(async course => {
     const res = await spinner.awaitWithSpinner(dataProcessor.addCourse(course));
@@ -36,17 +37,20 @@ formHandler.addHandler(async course => {
 })
 
 generationHandler.addHandler(async generation => {
-    for (let i=0; i < generation.nCourses; i++) {
-       await spinner.awaitWithSpinner(dataProcessor.addCourse(getRandomCourse(courseData)));  //reminder question to Daniel 
-    }
+    await spinner.awaitWithSpinner(
+        (async () => {
+            for (let i=0; i < generation.nCourses; i++) {
+                await dataProcessor.addCourse(getRandomCourse(courseData));
+            }
+        })()
+    );
     return '';
-})
+});
 
 formHandler.fillOptions("course-name-options", courseData.courses);
 formHandler.fillOptions("lecturer-options", courseData.lectors);
 const tableHoursStatistics = new TableHandler(statisticsColumnDefinition, "courses-table");
 const tableCostStatistics = new TableHandler(statisticsColumnDefinition, "courses-table");
-const spinner = new Spinner("spinner");
 
 function hide() {
     tableHandler.hideTable();
@@ -86,9 +90,21 @@ window.showCostStatistics = async () => {
 window.sortCourses = async (key) => {
     tableHandler.showTable(await spinner.awaitWithSpinner(dataProcessor.sortCourses(key)));
 }
+// window.removeCourse = async (id) => {
+//     if (window.confirm(`you are going to remove course id: ${id}`)) {
+//         await dataProcessor.removeCourse(+id);
+//         tableHandler.showTable(await spinner.awaitWithSpinner(dataProcessor.getAllCourses()));
+//     }
+// }
+
 window.removeCourse = async (id) => {
     if (window.confirm(`you are going to remove course id: ${id}`)) {
-        await spinner.awaitWithSpinner(dataProcessor.removeCourse(+id));
-        tableHandler.showTable(await spinner.awaitWithSpinner(dataProcessor.getAllCourses()));
+        await spinner.awaitWithSpinner(
+            (async () => {
+                await dataProcessor.removeCourse(+id)
+                tableHandler.showTable(await dataProcessor.getAllCourses())
+            }
+            )()
+        );
     }
 }

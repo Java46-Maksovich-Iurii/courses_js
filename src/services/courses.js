@@ -25,11 +25,10 @@ export default class Courses {
         return getPromise(1000, course);
     }
     #getId() {
-        //return unique value of id
         let id;
         do {
             id = getRandomNumber(this.#minId, this.#maxId)
-        }while(this.exists(id));
+        } while(this.exists(id));
         return id;
     }
     exists(id) {
