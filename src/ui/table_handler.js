@@ -23,7 +23,7 @@ export default class TableHandler {
         this.#tableElem.innerHTML = ''
     }
     #getHeader() {
-        return `<thead><tr>${this.#getColumns()}</tr></thead>`
+        return `<thead><tr style="cursor:pointer">${this.#getColumns()}</tr></thead>`
     }
     #getColumns() {
         const columns = this.#columnsDefinition.map(c => `<th onclick="${this.#getSortFn(c)}">${c.displayName}</th>`);

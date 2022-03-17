@@ -1,11 +1,12 @@
 import courseData from './config/courseData.json'
 import College from './services/college';
-import Courses from './services/courses';
+//import Courses from './services/courses';
+import { dataProvider } from './config/services-config';
 import FormHandler from './ui/form_handler';
 import TableHandler from './ui/table_handler';
 import Spinner from './ui/spinner';
 import { getRandomCourse } from './utils/randomCourse';
-import _ from 'lodash'
+import _ from 'lodash';
 import NavigatorButtons from './ui/navigator_buttons';
 
 const statisticsColumnDefinition = [
@@ -14,19 +15,20 @@ const statisticsColumnDefinition = [
     { key: "amount", displayName: "Amount" }
 ]
 
-const dataProvider = new Courses(courseData.minId, courseData.maxId);
+//const dataProvider = new Courses(courseData.minId, courseData.maxId);
 const dataProcessor = new College(dataProvider, courseData);
 const tableHandler = new TableHandler([
     { key: 'id', displayName: 'ID' },
     { key: 'name', displayName: 'Course' },
     { key: 'lecturer', displayName: 'Lecturer' },
     { key: 'cost', displayName: "Cost (ILS)" },
-    { key: 'hours', displayName: "Duration (h)" }
-], "courses-table", "sortCourses", "removeCourse");
+    { key: 'hours', displayName: "Duration (h)" },
+    { key: 'openingDate', displayName: "Opening date"}
+    ], "courses-table", "sortCourses", "removeCourse");
 const formHandler = new FormHandler("courses-form", "alert");
 const generationHandler = new FormHandler("generation-form", "alert");
 const navigator = new NavigatorButtons(["0","1","2", "3", "4"]);
-const spinner = new Spinner("spinner");
+const spinner = new Spinner("spinner", "alert");
 
 formHandler.addHandler(async course => {
     const res = await spinner.awaitWithSpinner(dataProcessor.addCourse(course));
@@ -90,12 +92,6 @@ window.showCostStatistics = async () => {
 window.sortCourses = async (key) => {
     tableHandler.showTable(await spinner.awaitWithSpinner(dataProcessor.sortCourses(key)));
 }
-// window.removeCourse = async (id) => {
-//     if (window.confirm(`you are going to remove course id: ${id}`)) {
-//         await dataProcessor.removeCourse(+id);
-//         tableHandler.showTable(await spinner.awaitWithSpinner(dataProcessor.getAllCourses()));
-//     }
-// }
 
 window.removeCourse = async (id) => {
     if (window.confirm(`you are going to remove course id: ${id}`)) {

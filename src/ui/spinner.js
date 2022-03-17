@@ -1,14 +1,23 @@
 export default class Spinner {
     #spinnerElement
-    constructor(idSpinnerParent) {
+    #alertElement
+    constructor(idSpinnerParent, idAlert) {
         this.#spinnerElement = document.getElementById(idSpinnerParent);
+        this.#alertElement = document.getElementById(idAlert);
     }
 
-async awaitWithSpinner(promsise) {
+async awaitWithSpinner(promise) {
     this.#startSpinner();
-    const response = await promsise; 
-    this.#stopSpinner();
-    return response;
+    try {
+        const response = await promise;
+        this.#stopSpinner();
+        return response;
+    } catch (err) {
+        this.#stopSpinner();
+        this.#alertElement.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error: </strong> ${err}<br>Server is unavailible, repeat later please</br>  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+    }
 }
 
 #startSpinner () {
